@@ -1,8 +1,11 @@
 [workspace]
 members = [
-    "js_api",
     "js_client",
     "shared"
+]
+
+exclude = [
+    "js_api",
 ]
 
 resolver = "2"
