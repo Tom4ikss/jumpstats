@@ -23,6 +23,7 @@ jobs:
       - name: Build Release
         env:
           CS2_TRACKER_SECRET: ${{ secrets.CS2_TRACKER_SECRET }}
+          API_URL: " https://obligingly-gamosepalous-lyndon.ngrok-free.dev"
         run: cargo build --release
 
       - name: Rename executable

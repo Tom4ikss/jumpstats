@@ -111,7 +111,7 @@ async fn main() -> Result<()> {
     })?;
 
 
-    let api_url: &'static str = option_env!("API_URL").unwrap_or("http://localhost:3000");
+    let api_url: &'static str = env!("API_URL");
 
     let log_file_path = config::get_or_ask_log_path();
 

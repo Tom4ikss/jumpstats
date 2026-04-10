@@ -8,8 +8,16 @@ fn main() {
     let out_dir = env::var_os("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("generated_secret.rs");
 
-    let secret = env::var("CS2_TRACKER_SECRET")
-        .unwrap_or_else(|_| "COMMUNITY_UNRANKED_KEY".to_string());
+    let secret = match env::var("CS2_TRACKER_SECRET") {
+        Ok(val) => {
+            println!("cargo:warning=Successfully get secret from CS2_TRACKER_SECRET");
+            val
+        }
+        Err(_) => {
+            println!("cargo:warning=WARNING: Secret not found. Using COMMUNITY_UNRANKED_KEY.");
+            "COMMUNITY_UNRANKED_KEY".to_string()
+        }
+    };
 
     let generated_code = format!(
         "pub fn get_secret() -> String {{\n    obfstr::obfstr!(\"{}\").to_string()\n}}",
