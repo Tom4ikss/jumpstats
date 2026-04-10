@@ -1,0 +1,33 @@
+name: Build and Release Official Client
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows:
+    name: Build for Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Release
+        env:
+          CS2_TRACKER_SECRET: ${{ secrets.CS2_TRACKER_SECRET }}
+        run: cargo build --release
+
+      - name: Rename executable
+        run: mv target/release/js_client.exe target/release/CS2_JS_TRACKER.exe
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/release/CS2_Tracker_Official.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
