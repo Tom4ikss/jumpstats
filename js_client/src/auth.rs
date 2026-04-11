@@ -1,18 +1,32 @@
 use directories::ProjectDirs;
-use tokio::net::TcpListener;
+use tokio::net::{TcpListener};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::fs;
 use std::net::SocketAddr;
 use std::path::PathBuf;
-use std::fs;
 
-
-fn get_token_file_path() -> Result<PathBuf, String> {
+pub fn get_token_file_path_sync() -> Result<PathBuf, String> {
 
     if let Some(proj_dirs) = ProjectDirs::from("com", "CS2", "JumpTracker") {
         let dir = proj_dirs.data_dir();
 
         if !dir.exists() {
-            fs::create_dir_all(dir).map_err(|e| format!("Failed to create dir: {}", e))?;
+            std::fs::create_dir_all(dir).map_err(|e| format!("Failed to create dir: {}", e))?;
+        }
+
+        Ok(dir.join("token"))
+    } else {
+        Err("Failed to find AppData dir".to_string())
+    }
+}
+
+pub async fn get_token_file_path() -> Result<PathBuf, String> {
+
+    if let Some(proj_dirs) = ProjectDirs::from("com", "CS2", "JumpTracker") {
+        let dir = proj_dirs.data_dir();
+
+        if !dir.exists() {
+            fs::create_dir_all(dir).await.map_err(|e| format!("Failed to create dir: {}", e))?;
         }
 
         Ok(dir.join("token"))
@@ -23,10 +37,10 @@ fn get_token_file_path() -> Result<PathBuf, String> {
 
 pub async fn get_or_fetch_token(api_url: &str) -> Result<String, Box<dyn std::error::Error>> {
 
-    let token_path = get_token_file_path()?;
+    let token_path = get_token_file_path().await?;
 
     if token_path.exists() {
-        match fs::read_to_string(&token_path) {
+        match fs::read_to_string(&token_path).await {
             Ok(token) if !token.trim().is_empty() => {
                 println!("Token found: {}", token.trim());
                 return Ok(token.trim().to_string());
@@ -65,7 +79,7 @@ pub async fn get_or_fetch_token(api_url: &str) -> Result<String, Box<dyn std::er
 
     socket.write_all(html_response.as_bytes()).await?;
 
-    fs::write(&token_path, &token)?;
+    fs::write(&token_path, &token).await?;
     println!("Token saved, login...");
 
     Ok(token)

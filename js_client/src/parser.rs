@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::collections::HashMap;
 use serde::Serialize;
-use shared::jump::{BlockThreshold, DistanceThreshold, JumpMainInfo, JumpRecord, JumpSummary, JumpTier, JumpTypes, PartialSummary, StatMode, Strafe, Threshold};
+use shared::jump::{DistanceThreshold, JumpMainInfo, JumpRecord, JumpSummary, JumpTier, JumpTypes, PartialSummary, Strafe};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TierConfig(pub f64, pub f64, pub f64, pub f64, pub f64);

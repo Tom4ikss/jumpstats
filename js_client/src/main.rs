@@ -1,25 +1,23 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use std::collections::HashMap;
-use crate::parser::{JumpParser, ParserError, TierConfig};
-use shared::jump::{BlockThreshold, DistanceThreshold, JumpRecord, JumpTypes};
-use std::fs::File;
-use std::io::{BufRead, BufReader, Seek, SeekFrom, Write};
 use std::time::Duration;
-use std::fs::{self, OpenOptions};
-use std::{io};
-use std::path::PathBuf;
-use sysinfo::{ProcessesToUpdate, System};
+use shared::jump::{BlockThreshold, DistanceThreshold, JumpTypes};
+use sysinfo::{System};
 use shared::messages::{InitResponse, SubmitJumpRequest, SubmitJumpResponse};
 use anyhow::{Result, Error, anyhow};
 use chrono::{DateTime, Utc, Duration as ChronoDuration};
+use tokio::io::{AsyncBufReadExt};
 use tray_item::{IconSource, TrayItem};
+use crate::auth::get_token_file_path_sync;
+use crate::game_launch::{attach_to_log, clear_log_file, ensure_running_or_launch_cs2, is_cs2_running, wait_for_cs2_process, wait_for_engine_init};
 use crate::sign::sign_request;
+use crate::parser::{JumpParser, ParserError, TierConfig};
 
 mod parser;
 mod auth;
 mod config;
 mod sign;
-
+mod game_launch;
 // pub fn save_jump_locally(record: &JumpRecord, output_dir: &str) -> std::io::Result<()> {
 //     fs::create_dir_all(output_dir)?;
 //
@@ -36,44 +34,6 @@ mod sign;
 //     writeln!(file, "{},", json_str)?;
 //     Ok(())
 // }
-
-fn is_cs2_running(sys: &mut System) -> bool {
-    sys.refresh_processes(ProcessesToUpdate::All, true);
-    sys.processes().values().any(|p| p.name().to_str().is_some_and(|s| s.to_lowercase().contains("cs2.exe")))
-}
-
-async fn wait_for_cs2_process(sys: &mut System) {
-    if !is_cs2_running(sys) {
-        println!("Waiting for CS2 launch...");
-        loop {
-            tokio::time::sleep(Duration::from_millis(500)).await;
-            if is_cs2_running(sys) {
-                break;
-            }
-        }
-    }
-}
-
-async fn attach_to_log(log_file_path: &PathBuf) -> Result<BufReader<File>> {
-    println!("Waiting for console.log creation...");
-
-    tokio::time::sleep(Duration::from_millis(10000)).await;
-    let file = loop {
-        match File::open(log_file_path) {
-            Ok(f) => break f,
-            Err(_) => {
-                tokio::time::sleep(Duration::from_millis(500)).await;
-            }
-        }
-    };
-
-    let mut reader = BufReader::new(file);
-
-    reader.seek(SeekFrom::End(0))?;
-
-    println!("Successfully connected to console log file.");
-    Ok(reader)
-}
 
 pub struct AppState {
     pub last_steam_username_check_time: Option<DateTime<Utc>>,
@@ -110,6 +70,30 @@ async fn main() -> Result<()> {
         std::process::exit(0);
     })?;
 
+    _tray.add_menu_item("Logout", || {
+        match get_token_file_path_sync() {
+            Ok(path) => {
+                match std::fs::remove_file(&path) {
+                    Ok(_) => println!("Logout successfully"),
+                    Err(e) => {
+                        if e.kind() != std::io::ErrorKind::NotFound {
+                            eprintln!("Logout error: {}", e);
+                        }
+                    }
+                }
+                std::process::exit(0);
+            }
+            Err(error) => {
+                std::process::exit(0);
+            }
+        }
+
+    })?;
+
+    _tray.add_menu_item("Discord server", || {
+        let _ = open::that("https://discord.gg/PAEaRuPqZZ");
+    })?;
+
 
     let api_url: &'static str = env!("API_URL");
 
@@ -120,7 +104,7 @@ async fn main() -> Result<()> {
         Err(e) => {
             eprintln!("Auth Error: {}", e);
             println!("Press enter to close client...");
-            let _ = io::stdin().read_line(&mut String::new());
+            let _ = std::io::stdin().read_line(&mut String::new());
             return Err(Error::from(anyhow!("AuthError")));
         }
     };
@@ -188,8 +172,18 @@ async fn main() -> Result<()> {
     let mut system = System::new();
     let mut state = AppState{ last_steam_username_check_time: None };
 
+    let mut game_was_running = ensure_running_or_launch_cs2(&mut system, &log_file_path).await;
+
     loop {
         wait_for_cs2_process(&mut system).await;
+
+        if !game_was_running {
+            wait_for_engine_init(&log_file_path).await;
+        } else {
+            tokio::time::sleep(Duration::from_secs(1)).await;
+        }
+
+        println!("{}", log_file_path.display());
 
         let mut reader = match attach_to_log(&log_file_path).await {
             Ok(r) => r,
@@ -208,15 +202,17 @@ async fn main() -> Result<()> {
         loop {
             line.clear();
 
-            match reader.read_line(&mut line) {
+            match reader.read_line(&mut line).await {
                 Ok(0) => {
                     tokio::time::sleep(Duration::from_millis(500)).await;
+                    //let _ = reader.seek(SeekFrom::Current(0)).await;
                     if !is_cs2_running(&mut system) {
                         println!("CS2 closed...");
                         break;
                     }
                 }
                 Ok(_) => {
+                    println!("Got line: {}", line);
                     match parser.process_line(&line) {
                         Ok(record) => {
                             let info = &record.info;
@@ -230,9 +226,9 @@ async fn main() -> Result<()> {
                                 continue;
                             }
 
-                            let is_new_distance = DistanceThreshold(amount) > server_thresholds.get(&jump_type).unwrap().0;
+                            let is_new_distance = DistanceThreshold(amount) > server_thresholds.get(&jump_type).map(|t| t.0).unwrap_or(DistanceThreshold(0.0));
                             let is_new_block = if let Some(block) = record.summary.block {
-                                BlockThreshold(block) > server_thresholds.get(&jump_type).unwrap().1
+                                BlockThreshold(block) > server_thresholds.get(&jump_type).map(|t| t.1).unwrap_or(BlockThreshold(0))
                             } else {
                                 false
                             };
@@ -301,5 +297,11 @@ async fn main() -> Result<()> {
                 }
             }
         }
+
+        drop(reader);
+
+        clear_log_file(&log_file_path).await;
+
+        game_was_running = false;
     }
 }
