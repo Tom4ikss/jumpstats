@@ -2,8 +2,10 @@ name: Build and Release Official Client
 
 on:
   push:
-    tags:
-      - 'v*'
+    paths:
+      - 'js_client/Cargo.toml'
+    branches:
+      - main
 
 jobs:
   build-windows:
