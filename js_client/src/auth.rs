@@ -4,6 +4,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::fs;
 use std::net::SocketAddr;
 use std::path::PathBuf;
+use shared::messages::AuthType;
 
 pub fn get_token_file_path_sync() -> Result<PathBuf, String> {
 
@@ -56,7 +57,7 @@ pub async fn get_or_fetch_token(api_url: &str) -> Result<String, Box<dyn std::er
     let addr: SocketAddr = ([127, 0, 0, 1], port).into();
     let listener = TcpListener::bind(&addr).await?;
     
-    let login_url = format!("{}/api/auth/steam/login?port={}", api_url, port);
+    let login_url = format!("{}/api/auth/steam/login/{}?port={}", api_url, AuthType::PORT, port);
     webbrowser::open(&login_url)?;
 
     println!("Waiting for auth...");

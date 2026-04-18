@@ -1,23 +1,23 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use ts_rs::TS;
+use strum_macros::{Display, EnumString, IntoStaticStr};
 use crate::jump::{BlockThreshold, DistanceThreshold, JumpTier, JumpTypes, StatMode, Threshold};
 
 
 
-#[derive(Serialize, Deserialize, TS, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InitResponse {
     pub thresholds: HashMap<JumpTypes, (DistanceThreshold, BlockThreshold)>,
 }
 
-#[derive(Serialize, Deserialize, TS, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SubmitJumpResponse {
     pub new_threshold: (DistanceThreshold, BlockThreshold),
     pub valid_username: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, TS, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SubmitJumpRequest<T> {
     pub user_token: String,
     pub steam_username: String,
@@ -29,50 +29,60 @@ pub struct SubmitJumpRequest<T> {
     pub is_js_always: bool,
 }
 
-#[derive(Serialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/TopRecord.ts")]
+#[derive(Debug, Serialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/TopRecord.ts"))]
 pub struct TopRecord {
     pub jump_id: i32,
     pub discord_id: Option<String>,
+    pub steam_id: String,
     pub amount: f64,
     pub block: Option<i16>,
 }
 
-#[derive(Serialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/TopRecordResponse.ts")]
+#[derive(Debug, Serialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/TopRecordResponse.ts"))]
 pub struct  TopRecordResponse(pub Vec<TopRecord>);
 
-#[derive(Serialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/DailyRecord.ts")]
+#[derive(Debug, Serialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DailyRecord.ts"))]
 pub struct DailyRecord {
     pub jump_id: i32,
     pub discord_id: Option<String>,
+    pub steam_id: String,
     pub amount: f64,
     pub block: Option<i16>,
     pub created_at: i64, // Для вывода времени рекорда
 }
 
-#[derive(Serialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/DailyRecordResponse.ts")]
+#[derive(Debug, Serialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DailyRecordResponse.ts"))]
 pub struct  DailyRecordResponse(pub Option<DailyRecord>);
 
-#[derive(Serialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/DiscordUserTopRecord.ts")]
+#[derive(Debug, Serialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DiscordUserTopRecord.ts"))]
 pub struct DiscordUserTopRecord<T> {
     pub jump_id: i32,
     pub amount: f64,
     pub block: Option<i16>,
+    pub steam_id: String,
     pub created_at: i64,
     pub record: T,
 }
 
-#[derive(Serialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/DiscordUserTopRecordResponse.ts")]
+#[derive(Debug, Serialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DiscordUserTopRecordResponse.ts"))]
 pub struct DiscordUserTopRecordResponse<T>(pub Vec<DiscordUserTopRecord<T>>);
 
 
-#[derive(Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/ServerRecordNotification.ts")]
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/ServerRecordNotification.ts"))]
 pub struct ServerRecordNotification {
     pub jump_id: i32,
     pub jump_type: JumpTypes,
@@ -82,10 +92,12 @@ pub struct ServerRecordNotification {
     pub previous_amount: Threshold,
     pub tier: JumpTier,
     pub stat_mode: StatMode,
+    pub steam_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/PersonalBestNotification.ts")]
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/PersonalBestNotification.ts"))]
 pub struct PersonalBestNotification {
     pub jump_id: i32,
     pub jump_type: JumpTypes,
@@ -98,8 +110,9 @@ pub struct PersonalBestNotification {
     pub stat_mode: StatMode,
 }
 
-#[derive(Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/PersonalTopNotification.ts")]
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/PersonalTopNotification.ts"))]
 pub struct PersonalTopNotification {
     pub jump_id: i32,
     pub jump_type: JumpTypes,
@@ -110,9 +123,32 @@ pub struct PersonalTopNotification {
 }
 
 
-#[derive(Debug, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "../../../jumpstats_discord_bot/src/types/JumpDetails.ts")]
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/JumpDetails.ts"))]
 pub struct JumpDetails<T> {
     pub record: T,
     pub created_at: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/BotSessionRequest.ts"))]
+pub struct BotSessionRequest {
+    pub discord_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/BotSessionResponse.ts"))]
+pub struct BotSessionResponse {
+    pub auth_url: String,
+}
+
+#[derive(Debug, Copy, Clone, Hash, Serialize, Deserialize, IntoStaticStr, EnumString, Display)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(repr(enum = name), export_to = "../../discord_bot/src/types/StatMode.ts"))]
+pub enum AuthType {
+    PORT,
+    SESSION
 }

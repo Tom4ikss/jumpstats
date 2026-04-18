@@ -127,7 +127,7 @@ impl JumpParser {
                 if let Some(caps) = self.start_re.captures(line) {
                     let steam_username = caps[2].to_string();
                     if let Some(valid_username) = self.valid_username.clone() {
-                        if(steam_username != valid_username) { return Err(ParserError::InvalidUsernameError); }
+                        if steam_username != valid_username { return Err(ParserError::InvalidUsernameError); }
                     }
                     let amount: f64 = caps[3].parse().unwrap_or(0.0);
                     match JumpParser::parse_jump_type(&caps[4]) {

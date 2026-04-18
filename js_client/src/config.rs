@@ -2,8 +2,7 @@ use std::{env, fs};
 use std::fs::OpenOptions;
 use std::path::PathBuf;
 use directories::ProjectDirs;
-use rfd::{FileDialog, MessageButtons, MessageDialog, MessageDialogResult, MessageLevel};
-use serde::Serialize;
+use rfd::{FileDialog, MessageDialog, MessageLevel};
 // pub fn show_welcome_dialog() {
 //     let res = MessageDialog::new()
 //         .set_title("Now please read the basics of using the application.")
@@ -167,3 +166,4 @@ pub fn get_or_ask_log_path() -> PathBuf {
         }
     }
 }
+

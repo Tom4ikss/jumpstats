@@ -3,4 +3,12 @@
 /js_api/
 /.idea/
 /target/
+**/target/
 /db.sql
+/discord_bot/
+/migrations/
+/.sqlx/
+/docker-compose.yml
+/Dockerfile
+Cargo.toml
+Cargo.docker.toml

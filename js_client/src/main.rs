@@ -6,18 +6,21 @@ use sysinfo::{System};
 use shared::messages::{InitResponse, SubmitJumpRequest, SubmitJumpResponse};
 use anyhow::{Result, Error, anyhow};
 use chrono::{DateTime, Utc, Duration as ChronoDuration};
+use rfd::MessageDialog;
 use tokio::io::{AsyncBufReadExt};
 use tray_item::{IconSource, TrayItem};
 use crate::auth::get_token_file_path_sync;
 use crate::game_launch::{attach_to_log, clear_log_file, ensure_running_or_launch_cs2, is_cs2_running, wait_for_cs2_process, wait_for_engine_init};
 use crate::sign::sign_request;
 use crate::parser::{JumpParser, ParserError, TierConfig};
+use crate::update::update_client;
 
 mod parser;
 mod auth;
 mod config;
 mod sign;
 mod game_launch;
+mod update;
 // pub fn save_jump_locally(record: &JumpRecord, output_dir: &str) -> std::io::Result<()> {
 //     fs::create_dir_all(output_dir)?;
 //
@@ -59,6 +62,11 @@ impl AppState {
 #[tokio::main]
 async fn main() -> Result<()> {
 
+    let exe_name = env!("EXE_NAME");
+
+    update_client(exe_name)
+        .map_err(|err| anyhow!("Failed to update client: {}", err))?;
+
     let mut _tray = TrayItem::new(
         "CS2 Jump Tracker",
         IconSource::Resource("app_icon")
@@ -83,7 +91,7 @@ async fn main() -> Result<()> {
                 }
                 std::process::exit(0);
             }
-            Err(error) => {
+            Err(_) => {
                 std::process::exit(0);
             }
         }
@@ -109,8 +117,9 @@ async fn main() -> Result<()> {
         }
     };
 
+
     println!("Connecting to API {}...", api_url);
-    let init_url = format!("{}/api/init/{}", api_url, user_token);
+    let init_url = format!("{}/api/init/{}", &api_url, &user_token);
 
     let http_client = reqwest::Client::new();
 
@@ -212,7 +221,6 @@ async fn main() -> Result<()> {
                     }
                 }
                 Ok(_) => {
-                    println!("Got line: {}", line);
                     match parser.process_line(&line) {
                         Ok(record) => {
                             let info = &record.info;

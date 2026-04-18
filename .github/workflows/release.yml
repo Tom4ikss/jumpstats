@@ -17,21 +17,52 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Extract version from Cargo.toml
+        id: extract_version
+        shell: bash
+        run: |
+          VERSION=$(grep '^version' js_client/Cargo.toml | head -n 1 | awk -F '"' '{print $2}')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Prepare Cargo Workspace for CI
+        run: copy Cargo.docker.toml Cargo.toml
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
       - name: Build Release
         env:
-          CS2_TRACKER_SECRET: ${{ secrets.CS2_TRACKER_SECRET }}
-          API_URL: " https://obligingly-gamosepalous-lyndon.ngrok-free.dev"
+          SAVE_JUMP_SECRET_KEY: ${{ secrets.CS2_TRACKER_SECRET }}
+          PUBLIC_URL: "https://obligingly-gamosepalous-lyndon.ngrok-free.dev"
+          EXE_NAME: "CS2_JS_TRACKER"
         run: cargo build --release
 
       - name: Rename executable
         run: mv target/release/js_client.exe target/release/CS2_JS_TRACKER.exe
 
+      - name: Attest Build Provenance (EXE)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'target/release/CS2_JS_TRACKER.exe'
+
+      - name: Create Zip Archive
+        shell: pwsh
+        run: |
+          Compress-Archive -Path target/release/CS2_JS_TRACKER.exe -DestinationPath target/release/CS2_JS_TRACKER-windows.zip
+
+      - name: Attest Build Provenance (ZIP)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'target/release/CS2_JS_TRACKER-windows.zip'
+
+
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         with:
-          files: target/release/CS2_JS_TRACKER.exe
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          files: | 
+            target/release/CS2_JS_TRACKER.exe
+            target/release/CS2_JS_TRACKER-windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
