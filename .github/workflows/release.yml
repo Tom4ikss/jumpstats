@@ -27,7 +27,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Prepare Cargo Workspace for CI
-        run: copy Cargo.docker.toml Cargo.toml
+        run: copy Cargo.ci.toml Cargo.toml
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
