@@ -37,7 +37,7 @@ jobs:
       - name: Build Release
         env:
           SAVE_JUMP_SECRET_KEY: ${{ secrets.CS2_TRACKER_SECRET }}
-          PUBLIC_URL: "https://obligingly-gamosepalous-lyndon.ngrok-free.dev"
+          PUBLIC_URL: "http://185.250.150.16"
           EXE_NAME: "CS2_JS_TRACKER"
         run: cargo build --release
 
