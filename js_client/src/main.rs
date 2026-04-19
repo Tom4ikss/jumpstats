@@ -103,7 +103,7 @@ async fn main() -> Result<()> {
     })?;
 
 
-    let api_url: &'static str = env!("API_URL");
+    let api_url: &'static str = env!("PUBLIC_URL");
 
     let log_file_path = config::get_or_ask_log_path();
 
