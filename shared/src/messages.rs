@@ -149,3 +149,10 @@ pub enum AuthType {
     PORT,
     SESSION
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "JumpModerationRequest.ts"))]
+pub struct JumpModerationRequest {
+    pub jump_id: i32,
+}

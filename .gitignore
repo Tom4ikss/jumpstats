@@ -10,5 +10,6 @@
 /.sqlx/
 /docker-compose.yml
 /Dockerfile
+.cargo/
 Cargo.toml
 Cargo.docker.toml
