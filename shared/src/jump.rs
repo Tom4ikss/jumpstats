@@ -4,17 +4,17 @@ use strum_macros::{EnumString, IntoStaticStr};
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, PartialOrd)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DistanceThreshold.ts"))]
+#[cfg_attr(test, ts(export, export_to = "DistanceThreshold.ts"))]
 pub struct DistanceThreshold(pub f64);
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, PartialOrd)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/BlockThreshold.ts"))]
+#[cfg_attr(test, ts(export, export_to = "BlockThreshold.ts"))]
 pub struct BlockThreshold(pub i16);
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, PartialOrd)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/Threshold.ts"))]
+#[cfg_attr(test, ts(export, export_to = "Threshold.ts"))]
 pub enum Threshold {
     DISTANCE(DistanceThreshold),
     BLOCK(BlockThreshold),
@@ -23,7 +23,7 @@ pub enum Threshold {
 
 #[derive(Debug, Copy, Clone, Hash, Serialize, Deserialize, IntoStaticStr, EnumString)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(repr(enum = name), export_to = "../../discord_bot/src/types/StatMode.ts"))]
+#[cfg_attr(test, ts(repr(enum = name), export_to = "StatMode.ts"))]
 pub enum StatMode {
     DISTANCE,
     BLOCKS,
@@ -38,7 +38,7 @@ impl StatMode {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, Serialize, Deserialize, IntoStaticStr, EnumString)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(repr(enum = name), export_to = "../../discord_bot/src/types/JumpTypes.ts"))]
+#[cfg_attr(test, ts(repr(enum = name), export_to = "JumpTypes.ts"))]
 pub enum JumpTypes {
     LJ,
     BH,
@@ -61,7 +61,7 @@ impl JumpTypes {
 
 #[derive(Debug, Clone, Deserialize, Serialize, IntoStaticStr, EnumString)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(repr(enum = name), export_to = "../../discord_bot/src/types/JumpTiers.ts"))]
+#[cfg_attr(test, ts(repr(enum = name), export_to = "JumpTiers.ts"))]
 pub enum JumpTier {
     IMPRESSIVE,
     PERFECT,
@@ -79,13 +79,13 @@ impl JumpTier {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/Crouched.ts"))]
+#[cfg_attr(test, ts(export, export_to = "Crouched.ts"))]
 pub struct Crouched(pub f64, pub f64);
 
 
 #[derive(Debug, Clone, Deserialize, Serialize, IntoStaticStr, EnumString)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(repr(enum = name), export_to = "../../discord_bot/src/types/JumpDirection.ts"))]
+#[cfg_attr(test, ts(repr(enum = name), export_to = "JumpDirection.ts"))]
 pub enum JumpDirection {
     FORWARDS,
     BACKWARDS,
@@ -94,7 +94,7 @@ pub enum JumpDirection {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/PartialSummary.ts"))]
+#[cfg_attr(test, ts(export, export_to = "PartialSummary.ts"))]
 pub struct PartialSummary {
     pub mode: String,
     pub block: Option<i16>,
@@ -169,7 +169,7 @@ impl PartialSummary {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/JumpSummary.ts"))]
+#[cfg_attr(test, ts(export, export_to = "JumpSummary.ts"))]
 pub struct JumpSummary {
     pub mode: String,
     pub block: Option<i16>,
@@ -239,12 +239,12 @@ impl JumpSummary {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/Ratio.ts"))]
+#[cfg_attr(test, ts(export, export_to = "Ratio.ts"))]
 pub struct Ratio(pub f64, pub f64, pub f64);
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/Strafe.ts"))]
+#[cfg_attr(test, ts(export, export_to = "Strafe.ts"))]
 pub struct Strafe {
     pub number: u32,
     pub sync: f64,
@@ -318,7 +318,7 @@ impl Strafe {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/JumpMainInfo.ts"))]
+#[cfg_attr(test, ts(export, export_to = "JumpMainInfo.ts"))]
 pub struct JumpMainInfo {
     pub steam_username: String,
     pub amount: f64,
@@ -329,7 +329,7 @@ pub struct JumpMainInfo {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/JumpRecord.ts"))]
+#[cfg_attr(test, ts(export, export_to = "JumpRecord.ts"))]
 pub struct JumpRecord {
     pub info: JumpMainInfo,
     pub summary: JumpSummary,

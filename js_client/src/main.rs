@@ -62,10 +62,10 @@ impl AppState {
 #[tokio::main]
 async fn main() -> Result<()> {
 
-    let exe_name = env!("EXE_NAME");
+    let exe_name = "CS2_JS_TRACKER";
 
-    update_client(exe_name)
-        .map_err(|err| anyhow!("Failed to update client: {}", err))?;
+    //update_client(exe_name)
+    //.map_err(|err| anyhow!("Failed to update client: {}", err))?;
 
     let mut _tray = TrayItem::new(
         "CS2 Jump Tracker",
@@ -103,7 +103,7 @@ async fn main() -> Result<()> {
     })?;
 
 
-    let api_url: &'static str = env!("PUBLIC_URL");
+    let api_url: &'static str = "http://185.250.150.16";
 
     let log_file_path = config::get_or_ask_log_path();
 

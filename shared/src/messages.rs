@@ -1,10 +1,7 @@
-
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use strum_macros::{Display, EnumString, IntoStaticStr};
 use crate::jump::{BlockThreshold, DistanceThreshold, JumpTier, JumpTypes, StatMode, Threshold};
-
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InitResponse {
@@ -31,7 +28,7 @@ pub struct SubmitJumpRequest<T> {
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/TopRecord.ts"))]
+#[cfg_attr(test, ts(export, export_to = "TopRecord.ts"))]
 pub struct TopRecord {
     pub jump_id: i32,
     pub discord_id: Option<String>,
@@ -42,12 +39,12 @@ pub struct TopRecord {
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/TopRecordResponse.ts"))]
+#[cfg_attr(test, ts(export, export_to = "TopRecordResponse.ts"))]
 pub struct  TopRecordResponse(pub Vec<TopRecord>);
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DailyRecord.ts"))]
+#[cfg_attr(test, ts(export, export_to = "DailyRecord.ts"))]
 pub struct DailyRecord {
     pub jump_id: i32,
     pub discord_id: Option<String>,
@@ -59,12 +56,12 @@ pub struct DailyRecord {
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DailyRecordResponse.ts"))]
+#[cfg_attr(test, ts(export, export_to = "DailyRecordResponse.ts"))]
 pub struct  DailyRecordResponse(pub Option<DailyRecord>);
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DiscordUserTopRecord.ts"))]
+#[cfg_attr(test, ts(export, export_to = "DiscordUserTopRecord.ts"))]
 pub struct DiscordUserTopRecord<T> {
     pub jump_id: i32,
     pub amount: f64,
@@ -76,13 +73,13 @@ pub struct DiscordUserTopRecord<T> {
 
 #[derive(Debug, Serialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/DiscordUserTopRecordResponse.ts"))]
+#[cfg_attr(test, ts(export, export_to = "DiscordUserTopRecordResponse.ts"))]
 pub struct DiscordUserTopRecordResponse<T>(pub Vec<DiscordUserTopRecord<T>>);
 
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/ServerRecordNotification.ts"))]
+#[cfg_attr(test, ts(export, export_to = "ServerRecordNotification.ts"))]
 pub struct ServerRecordNotification {
     pub jump_id: i32,
     pub jump_type: JumpTypes,
@@ -97,7 +94,7 @@ pub struct ServerRecordNotification {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/PersonalBestNotification.ts"))]
+#[cfg_attr(test, ts(export, export_to = "PersonalBestNotification.ts"))]
 pub struct PersonalBestNotification {
     pub jump_id: i32,
     pub jump_type: JumpTypes,
@@ -112,7 +109,7 @@ pub struct PersonalBestNotification {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/PersonalTopNotification.ts"))]
+#[cfg_attr(test, ts(export, export_to = "PersonalTopNotification.ts"))]
 pub struct PersonalTopNotification {
     pub jump_id: i32,
     pub jump_type: JumpTypes,
@@ -125,7 +122,7 @@ pub struct PersonalTopNotification {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/JumpDetails.ts"))]
+#[cfg_attr(test, ts(export, export_to = "JumpDetails.ts"))]
 pub struct JumpDetails<T> {
     pub record: T,
     pub created_at: i64,
@@ -133,21 +130,21 @@ pub struct JumpDetails<T> {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/BotSessionRequest.ts"))]
+#[cfg_attr(test, ts(export, export_to = "BotSessionRequest.ts"))]
 pub struct BotSessionRequest {
     pub discord_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(export, export_to = "../../discord_bot/src/types/BotSessionResponse.ts"))]
+#[cfg_attr(test, ts(export, export_to = "BotSessionResponse.ts"))]
 pub struct BotSessionResponse {
     pub auth_url: String,
 }
 
 #[derive(Debug, Copy, Clone, Hash, Serialize, Deserialize, IntoStaticStr, EnumString, Display)]
 #[cfg_attr(test, derive(ts_rs::TS))]
-#[cfg_attr(test, ts(repr(enum = name), export_to = "../../discord_bot/src/types/StatMode.ts"))]
+#[cfg_attr(test, ts(repr(enum = name), export_to = "StatMode.ts"))]
 pub enum AuthType {
     PORT,
     SESSION

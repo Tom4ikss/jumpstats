@@ -3,7 +3,4 @@ members = [
     "shared",
     "js_client",
 ]
-exclude = [
-    "js_api"
-]
 resolver = "3"
