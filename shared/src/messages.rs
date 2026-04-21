@@ -123,7 +123,7 @@ pub struct PersonalTopNotification {
 #[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(ts_rs::TS))]
 #[cfg_attr(test, ts(export, export_to = "JumpDetails.ts"))]
-pub struct JumpDetails<T> {
+pub struct JumpDetailsResponse<T> {
     pub record: T,
     pub created_at: i64,
 }
@@ -155,4 +155,26 @@ pub enum AuthType {
 #[cfg_attr(test, ts(export, export_to = "JumpModerationRequest.ts"))]
 pub struct JumpModerationRequest {
     pub jump_id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "ValidateJumpRequest.ts"))]
+pub struct ValidateJumpRequest {
+    pub jump_id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "InvalidateJumpRequest.ts"))]
+pub struct InvalidateJumpRequest {
+    pub jump_id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "BanUserRequest.ts"))]
+pub struct BanUserRequest {
+    pub steam_id: String,
+    pub reason: Option<String>,
 }
