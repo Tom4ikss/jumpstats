@@ -178,3 +178,10 @@ pub struct BanUserRequest {
     pub steam_id: String,
     pub reason: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(test, derive(ts_rs::TS))]
+#[cfg_attr(test, ts(export, export_to = "UnbanUserRequest.ts"))]
+pub struct UnbanUserRequest {
+    pub steam_id: String,
+}
